@@ -1,0 +1,38 @@
+{
+	"MonksBloodsplats.show-bloodsplat.name": "Pokaż rozpryski krwi",
+	"MonksBloodsplats.show-bloodsplat.hint": "Gdy potwór zginie, należy wyświetlić go jako plamę krwi. Możesz zdecydować się na ukrycie tokena dla graczy.",
+	"MonksBloodsplats.bloodsplat-colour.name": "Kolor rozprysku krwi",
+	"MonksBloodsplats.bloodsplat-size.name": "Rozmiar rozprysku krwi",
+	"MonksBloodsplats.bloodsplat-size.hint": "Ustaw rozmiar rozprysku krwi w porównaniu do oryginalnego rozmiaru tokena.",
+	"MonksBloodsplats.bloodsplat-opacity.name": "Przezroczystość martwego tokena",
+	"MonksBloodsplats.bloodsplat-opacity.hint": "Dostosuj przezroczystość martwego/pokonanego tokena",
+	"MonksBloodsplats.edit-types.name": "Edytuj typy",
+	"MonksBloodsplats.edit-types.hint": "Wybór typów obrazów i kolorów, które mają być stosowane do tokenów",
+	"MonksBloodsplats.disabled-bloodsplats.name": "Wyłącz sterowanie",
+	"MonksBloodsplats.disabled-bloodsplats.hint": "Dodanie przycisku do menu tokenów w celu przełączenia wyłączonych tokenów.",
+	"MonksBloodsplats.remove-effects.name": "Usuń efekty z pokonanych",
+	"MonksBloodsplats.remove-effects.hint": "Usuń wszystkie animowane efekty z pokonanych tokenów.",
+	"MonksBloodsplats.remove-overlay.name": "Usuń nakładkę z pokonanych",
+	"MonksBloodsplats.remove-overlay.hint": "Usuń wszystkie nakładki z pokonanych tokenów",
+
+	"MonksBloodsplats.EditTypes": "Edytuj typy",
+	"MonksBloodsplats.EditImages": "Edytuj obrazy",
+	"MonksBloodsplats.DisableToken": "Wyłącz tokeny rozprysku krwi",
+	"MonksBloodsplats.SaveChanges": "Zapisz zmiany",
+	"MonksBloodsplats.ResetDefaults": "Przywracanie ustawień domyślnych",
+	"MonksBloodsplats.Code": "Kod",
+	"MonksBloodsplats.Name": "Nazwa",
+	"MonksBloodsplats.Color": "Kolor",
+	"MonksBloodsplats.Count": "Licznik",
+	"MonksBloodsplats.Folder": "Folder",
+	"MonksBloodsplats.Ext": "Rozszerzenie",
+	"MonksBloodsplats.Opacity": "Przezroczystość",
+	"MonksBloodsplats.Delete": "Usuń",
+	"MonksBloodsplats.Add": "Dodaj",
+
+
+	"MonksBloodsplats.bloodsplatoptions.true": "Ukryj tokeny dla graczy",
+	"MonksBloodsplats.bloodsplatoptions.both": "Pokaż tokeny dla graczy",
+	"MonksBloodsplats.edit-images.name": "Edycja folderów obrazów",
+	"MonksBloodsplats.edit-images.hint": "Wybierz, które foldery mają być używane dla obrazów rozprysków krwi"
+}
