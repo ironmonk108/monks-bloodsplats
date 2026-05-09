@@ -1,7 +1,7 @@
 {
   "title": "Monk's Bloodsplats",
   "description": "Display dead creatures as bloodsplats to keep the battlefield clear of tokens. Bloodsplats are generated randomly per creature and show when the creature has a dead or defeated status. With options to change the colour and transparency of the blood splat, either individually or per world.",
-  "version": "13.01",
+  "version": "14.01",
   "authors": [
     {
       "name": "IronMonk",
@@ -68,13 +68,13 @@
     "css/monks-bloodsplats.css"
   ],
   "url": "https://github.com/ironmonk108/monks-bloodsplats",
-  "download": "https://github.com/ironmonk108/monks-bloodsplats/archive/13.01.zip",
+  "download": "https://github.com/ironmonk108/monks-bloodsplats/archive/14.01.zip",
   "manifest": "https://github.com/ironmonk108/monks-bloodsplats/releases/latest/download/module.json",
   "bugs": "https://github.com/ironmonk108/monks-bloodsplats/issues",
   "id": "monks-bloodsplats",
   "compatibility": {
-    "minimum": "13",
-    "verified": "13"
+    "minimum": "14",
+    "verified": "14"
   },
   "flags": {
     "allowBugReporter": true

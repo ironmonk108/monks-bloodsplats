@@ -112,6 +112,25 @@
     width: fit-content;
     white-space: nowrap;
     padding: 0px 5px;
+    transition: 0.5s;
+}
+
+body.theme-light .monks-bloodsplats-edit-images .items-list .item-control.text {
+    background: rgba(0 0 0 / 10%);
+    color: var(--color-dark-1);
+    border: 1px solid var(--color-dark-5);
+}
+
+body.theme-dark .monks-bloodsplats-edit-images .items-list .item-control.text {
+    background: var(--color-cool-5-75);
+    color: var(--color-text-secondary);
+    border: 1px solid rgb(192, 192, 192);
+}
+
+body .monks-bloodsplats-edit-images .items-list .item-control.text:hover {
+    background: var(--color-warm-2);
+    border: 1px solid var(--color-light-3);
+    color: var(--color-light-1);
 }
 
 .monks-bloodsplats-edit-images .items-list .item {

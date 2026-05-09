@@ -77,7 +77,7 @@ export const registerSettings = function () {
 	game.settings.register(modulename, "defeated-tokens-disabled", {
 		scope: "client",
 		config: false,
-		default: true,
+		default: false,
 		type: Boolean,
 	});
 	game.settings.register(modulename, "remove-overlay", {
@@ -96,6 +96,14 @@ export const registerSettings = function () {
 		config: true,
 		default: true,
 		type: Boolean,
+	});
+	game.settings.register(modulename, "defeated-status", {
+		name: i18n("MonksBloodsplats.defeated-status.name"),
+		hint: i18n("MonksBloodsplats.defeated-status.hint"),
+		scope: "world",
+		config: true,
+		default: CONFIG.specialStatusEffects.DEFEATED,
+		type: String,
 	});
 	game.settings.register(modulename, "bloodsplat-colour", {
 		name: i18n("MonksBloodsplats.bloodsplat-colour.name"),
@@ -200,5 +208,12 @@ export const registerSettings = function () {
 		scope: "world",
 		config: false,
 		default: false,
+	});
+
+	game.settings.register(modulename, "file-paths", {
+		scope: "world",
+		config: false,
+		default: {},
+		type: Object,
 	});
 };

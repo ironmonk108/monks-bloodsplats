@@ -52,10 +52,28 @@ export class EditImages extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     static async onSubmitDocumentForm(event, form, formData, options = {}) {
-        let data = this.imageLists.filter(c => !!c.id && !!c.name);
-        game.settings.set('monks-bloodsplats', 'image-lists', data);
-        MonksBloodsplats.image_list = data;
+        let imageLists = [];
+        let fd = formData.object;
+        for (let i = 0; i < fd.id.length; i++) {
+            let id = fd.id[i];
+            if (!id || !fd.name[i]) continue;
+
+            imageLists.push({
+                id: id,
+                name: fd.name[i],
+                color: fd.color[i],
+                count: fd.count[i],
+                opacity: fd.opacity[i],
+                folder: fd.folder[i],
+                ext: fd.ext[i]
+            });
+        }
+
+        game.settings.set('monks-bloodsplats', 'image-lists', imageLists);
+        MonksBloodsplats.image_list = imageLists;
         this.submitting = true;
+
+        MonksBloodsplats.refreshFilepaths();
     }
 
     addList(event) {
@@ -136,7 +154,7 @@ export class EditImages extends HandlebarsApplicationMixin(ApplicationV2) {
         let parent = event.currentTarget.closest('li.item');
         let id = $("input[name='id']", parent).val();
         let image = this.imageLists.find(c => c.id == id);
-        const fp = new FilePicker({
+        const fp = new foundry.applications.apps.FilePicker.implementation({
             type: "folder",
             current: this.imageLists.find(c => c.id == id).folder,
             callback: async (path) => {
@@ -166,7 +184,7 @@ export class EditImages extends HandlebarsApplicationMixin(ApplicationV2) {
         // Support S3 matching
         if (/\.s3\./.test(pattern)) {
             source = "s3";
-            const { bucket, keyPrefix } = FilePicker.parseS3URL(pattern);
+            const { bucket, keyPrefix } = foundry.utils.parseS3URL(pattern);
             if (bucket) {
                 browseOptions.bucket = bucket;
                 pattern = keyPrefix;
@@ -178,7 +196,7 @@ export class EditImages extends HandlebarsApplicationMixin(ApplicationV2) {
             extensions: [`.${ext}`]
         };
 
-        let content = await FilePicker.browse(source, pattern, browseOptions);
+        let content = await foundry.applications.apps.FilePicker.implementation.browse(source, pattern, browseOptions);
         $('input[name="count"]', parent).val(content.files.length);
         image.count = content.files.length;
     }

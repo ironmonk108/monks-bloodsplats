@@ -49,6 +49,7 @@ export let patchFunc = (prop, func, type = "WRAPPER") => {
 export class MonksBloodsplats {
     static movingToken = false;
     static _setting = {};
+    static save_file_paths = false;
 
     static init() {
         if (game.MonksBloodsplats == undefined)
@@ -69,6 +70,11 @@ export class MonksBloodsplats {
 
         MonksBloodsplats.image_list = setting("image-lists");
         MonksBloodsplats.blood_types = setting("blood-types");
+        MonksBloodsplats.file_paths = setting("file-paths");
+
+        if (Object.keys(MonksBloodsplats.file_paths).length == 0) {
+            MonksBloodsplats.refreshFilepaths();
+        }
 
         patchFunc("foundry.canvas.placeables.Token.prototype._drawOverlay", async function (wrapper, ...args) {
             if (MonksBloodsplats.isDefeated(this) && this.actor?.type !== 'character') {
@@ -121,6 +127,43 @@ export class MonksBloodsplats {
         });
     }
 
+    static async refreshFilepaths() {
+        let filePaths = {};
+        for (let list of MonksBloodsplats.image_list) {
+            let folder = list.folder || `/modules/monks-bloodsplats/images/${list.id}`;
+            let ext = list.ext || "webp";
+
+            let pattern = folder + "/*." + ext;
+            // get the list of images form the directory
+            let source = "data";
+            if (typeof ForgeVTT != "undefined" && ForgeVTT.usingTheForge) {
+                source = "forgevtt";
+            }
+
+            // Support S3 matching
+            if (/\.s3\./.test(pattern)) {
+                source = "s3";
+                const { bucket, keyPrefix } = foundry.utils.parseS3URL(pattern);
+                if (bucket) {
+                    browseOptions.bucket = bucket;
+                    pattern = keyPrefix;
+                }
+            }
+
+            const browseOptions = {
+                wildcard: true,
+                extensions: [`.${ext}`]
+            };
+
+            try {
+                let content = await foundry.applications.apps.FilePicker.implementation.browse(source, pattern, browseOptions);
+                filePaths[folder] = content.files;
+            } catch { }
+        }
+
+        MonksBloodsplats.save_file_paths = true;
+        MonksBloodsplats.file_paths = filePaths;
+    }
 
     static getBloodType(token) {
         let types = [];
@@ -158,8 +201,6 @@ export class MonksBloodsplats {
         }
         if (bloodType.type == undefined)
             bloodType.type = MonksBloodsplats.blood_types.default.type || "blood";
-        if (bloodType.color == undefined)
-            bloodType.color = MonksBloodsplats.blood_types.default.color;
         if (bloodType.size == undefined)
             bloodType.size = MonksBloodsplats.blood_types.default.size;
 
@@ -182,15 +223,16 @@ export class MonksBloodsplats {
         }
 
         let folder = list.folder || `/modules/monks-bloodsplats/images/${list.id}`;
-        let ext = list.ext || "webp";
-        let filename = `${folder}/${index}.${ext}`
+        let filename = MonksBloodsplats.getImagePath(folder, index);
+        if (!filename)
+            return;
         const tex = PIXI.Assets.cache.has(filename) ? foundry.canvas.getTexture(filename) : await foundry.canvas.loadTexture(filename);
         if (!tex)
             return;
 
         let s = new PIXI.Sprite(tex);
 
-        let colour = blood.color || list.color || '#ff0000';
+        let colour = blood.color || list.color || MonksBloodsplats.blood_types.default.color || '#ff0000';
         let size = blood.size || list.size || setting("bloodsplat-size") || 1;
         s.tint = colour;
         s.alpha = (animate || (token.document.hidden && !game.user.isGM) ? 0 : 0.7);
@@ -205,8 +247,21 @@ export class MonksBloodsplats {
         return s;
     }
 
+    static getImagePath(folder, index) {
+        let filePaths = MonksBloodsplats.file_paths || {};
+        let fileList = filePaths[folder] || [];
+        
+        if (fileList.length == 0)
+            return;
+        if (index == undefined || index < 0 || index >= fileList.length) {
+            index = 0;
+        }
+        return fileList[index];
+    }
+
     static isDefeated(token) {
-        return (token && (token.combatant && token.combatant?.defeated) || !!token.actor?.statuses.has(CONFIG.specialStatusEffects.DEFEATED));
+        let defeatedStatus = setting("defeated-status") || CONFIG.specialStatusEffects.DEFEATED;
+        return (token && (token.combatant && token.combatant?.defeated) || !!token.actor?.statuses.has(defeatedStatus));
     }
 
     static async refreshBloodsplat(token) {
@@ -240,12 +295,16 @@ export class MonksBloodsplats {
                     token.interactive = true;
                 }
 
+                if (token.bloodsplat == "loading")
+                    return;
+
                 if (token.bloodsplat?.transform == undefined) {
                     if (token._animateTo === undefined) {
                         let animate = canvas.ready && !token._original && !MonksBloodsplats.canvasLoading;
                         if (token.bloodsplat)
                             token.bloodsplat.destroy();
 
+                        token.bloodsplat = "loading";
                         token.bloodsplat = await MonksBloodsplats.getBloodImage(token, animate);
                         if (token.bloodsplat) {
                             canvas.regions.bloodsplats?.addChild(token.bloodsplat);
@@ -370,7 +429,7 @@ export class MonksBloodsplats {
                     var svgFile = new File([svgBlob], `${index}.svg`, { type: "image/svg+xml;charset=utf-8" });
 
                     // use FilePicker to uplaod the svg to the server
-                    FilePicker.upload("data", `modules/monks-bloodsplats/images/${typeId}`, svgFile,
+                    foundry.applications.apps.FilePicker.implementation.upload("data", `modules/monks-bloodsplats/images/${typeId}`, svgFile,
                         {
                             bucket: "public",
                             path: `modules/monks-bloodsplats/images/${typeId}`,
@@ -388,10 +447,21 @@ export class MonksBloodsplats {
 
         });
     }
+
+    static refreshAllBloodsplats() {
+        for (let token of canvas.tokens.placeables) {
+            MonksBloodsplats.refreshBloodsplat(token);
+        }
+    }
 }
 
 Hooks.once('init', MonksBloodsplats.init);
 
+Hooks.once('ready', () => {
+    if (MonksBloodsplats.save_file_paths && game.user.isGM) {
+        game.settings.set("monks-bloodsplats", "file-paths", MonksBloodsplats.file_paths);
+    }
+});
 
 Hooks.on("updateSetting", (setting, data, options, userid) => {
     if (setting.key.startsWith("monks-bloodsplats")) {
@@ -536,7 +606,7 @@ Hooks.on("destroyToken", (token) => {
 
 Hooks.on("sightRefresh", function () {
     for (let token of canvas.tokens.placeables) {
-        if (token.bloodsplat)
+        if (token.bloodsplat && token.bloodsplat !== "loading")
             token.bloodsplat.visible = token.isVisible;
     }
 });
@@ -562,10 +632,10 @@ Hooks.on("getSceneControlButtons", (controls) => {
             icon: "fas fa-splotch",
             toggle: true,
             active: setting("defeated-tokens-disabled"),
-            onClick: (active) => {
-                game.settings.set("monks-bloodsplats", "defeated-tokens-disabled", active);
+            onChange: (event, toggled) => {
+                game.settings.set("monks-bloodsplats", "defeated-tokens-disabled", toggled);
                 canvas.tokens.placeables.forEach(token => {
-                    if (active && MonksBloodsplats.isDefeated(token) && game.combats.active) {
+                    if (toggled && MonksBloodsplats.isDefeated(token) && game.combats.active) {
                         token.eventMode = "none";
                         token.interactive = false;
                         if (token.controlled && game.combat?.active && game.combat?.started) {

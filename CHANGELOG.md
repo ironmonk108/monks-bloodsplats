@@ -1,3 +1,25 @@
+# version 14.01
+
+v14 compatibility
+
+Removed the limitation of having to name additional files in numerical order.  You can just select a folder and it will use the images in that folder.
+
+Fixed issue saving image list data
+
+Fixed deprecation warnings
+
+Fixed Add button styling to support both dark and light mode themes
+
+Added API function call to reset all bloodsplats
+
+Added option to set effect name that triggers bloodsplat
+
+Fixed an issue where the type list colour was being ignore in place of the image list colour
+
+Fixed issue with double bloodsplats when loading a scene that already has splats
+
+Changed the default setting of disabling tokens while splatted, so that it's an opt in, rather than opt out.
+
 # version 13.01
 
 v13 compatibility
